@@ -1,0 +1,21 @@
+framework:
+  messenger:
+    default_bus: command.bus
+    buses:
+      command.bus:
+        default_middleware: allow_and_handle_no_handler
+      query.bus:
+        default_middleware: allow_and_handle_no_handler
+    
+    transports:
+      sync: 'sync://'
+    
+    routing:
+      'App\Application\Shared\Command\CommandInterface': sync
+      'App\Application\Shared\Query\QueryInterface': sync
+
+when@test:
+  framework:
+    messenger:
+      transports:
+        sync: 'in-memory://'

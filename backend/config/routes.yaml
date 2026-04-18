@@ -1,0 +1,4 @@
+# Routes Configuration
+controllers:
+    resource: ../src/Presentation/Controller/
+    type: attribute

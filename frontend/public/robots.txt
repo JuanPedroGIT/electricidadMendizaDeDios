@@ -1,0 +1,5 @@
+# robots.txt for Construcciones Salamanca
+User-agent: *
+Allow: /
+
+Sitemap: https://construcciones.local/sitemap.xml

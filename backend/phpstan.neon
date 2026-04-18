@@ -1,0 +1,14 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - src
+    excludePaths:
+        - src/Kernel.php
+    ignoreErrors:
+        # Ignore missing return type for Symfony message handlers
+        - '#CommandHandlerInterface#'
+        - '#QueryHandlerInterface#'

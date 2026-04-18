@@ -1,0 +1,39 @@
+# Variables de entorno requeridas en .env raíz:
+# DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+# REDIS_HOST, REDIS_PORT
+# APP_ENV, APP_SECRET, ADMIN_PASSWORD_HASH
+# MAILER_DSN, NOTIFICATION_TO_EMAIL, NOTIFICATION_FROM_EMAIL
+# VITE_API_BASE
+
+services:
+  electri-backend-php:
+    build:
+      context: ./backend
+      target: dev
+    container_name: electri-backend-php
+    env_file: .env
+    environment:
+      DATABASE_URL: "pgsql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?serverVersion=16&charset=utf8"
+      REDIS_URL: "redis://${REDIS_HOST}:${REDIS_PORT}"
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - shared-network
+
+  electri-frontend:
+    build: ./frontend
+    container_name: electri-frontend
+    env_file: .env
+    working_dir: /app
+    command: ["npm","run","dev","--","--host","0.0.0.0","--port","5173"]
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
