@@ -17,9 +17,15 @@ export default defineConfig({
   },
   // AÑADE ESTA SECCIÓN:
   server: {
-    host: '0.0.0.0',      // Permite conexiones externas al contenedor
-    port: 5173,           // Aseguramos el puerto que ya usa Nginx
-    allowedHosts: true,   // <--- ESTO ELIMINA EL ERROR 403
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: true,
     strictPort: true,
+    // AÑADE ESTO PARA EL TÚNEL:
+    hmr: {
+      host: 'electricidadmendozadedios.online',
+      protocol: 'wss',
+      clientPort: 443
+    }
   }
 })
