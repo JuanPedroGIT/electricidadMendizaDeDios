@@ -22,18 +22,18 @@ services:
       - shared-network
 
   electri-frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: prod-stage  # Apunta a la segunda etapa del Dockerfile
     container_name: electri-frontend
-    env_file: .env
-    working_dir: /app
-    command: ["npm","run","dev","--","--host","0.0.0.0","--port","5173"]
     restart: unless-stopped
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    # Ya NO necesitamos el comando "npm run dev"
+    # Ya NO necesitamos mapear "node_modules"
     networks:
       - shared-network
-
+    volumes:
+      - ./frontend:/app # Opcional en prod, pero útil para persistencia
+      
 networks:
   shared-network:
     name: shared-network
