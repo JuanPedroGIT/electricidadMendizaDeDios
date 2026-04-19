@@ -1,15 +1,23 @@
-# ETAPA 1: Construcción (Build)
-FROM node:20-alpine as build-stage
+# Dev: Vite dev server con hot-reload
+FROM node:20-alpine AS dev
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 80
+CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "80"]
+
+# Build: compila los assets estáticos
+FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
 
-# ETAPA 2: Producción (Nginx)
-FROM nginx:stable-alpine as prod-stage
-# Copiamos el build de la etapa anterior
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-# Copiamos una configuración mínima de nginx para SPA (opcional pero recomendado)
+# Prod: nginx sirve los assets compilados
+FROM nginx:stable-alpine AS prod
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
