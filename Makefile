@@ -1,6 +1,6 @@
 PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-DC := docker compose
-BACKEND_PHP := $(DC) exec constru-backend-php php
+DC := docker compose -f docker-compose.prod.yml
+BACKEND_PHP := $(DC) exec electri-backend-php php
 
 .PHONY: backend-install frontend-install up down logs migrate seed-db \
         lint-frontend lint-backend \
@@ -22,7 +22,7 @@ logs:
 	$(DC) logs -f
 
 migrate:
-	$(DC) exec constru-backend-php php bin/console doctrine:migrations:migrate -n
+	$(DC) exec electri-backend-php php bin/console doctrine:migrations:migrate -n
 
 # Frontend linting
 lint-frontend:
@@ -34,15 +34,15 @@ lint-backend:
 
 # PHPStan - static analysis
 lint-phpstan:
-	$(DC) exec constru-backend-php vendor/bin/phpstan analyse --memory-limit=1G
+	$(DC) exec electri-backend-php vendor/bin/phpstan analyse --memory-limit=1G
 
 # PHP CS Fixer - check code style
 lint-cs-check:
-	$(DC) exec constru-backend-php vendor/bin/php-cs-fixer fix --dry-run --diff
+	$(DC) exec electri-backend-php vendor/bin/php-cs-fixer fix --dry-run --diff
 
 # PHP CS Fixer - fix code style
 fix-cs:
-	$(DC) exec constru-backend-php vendor/bin/php-cs-fixer fix
+	$(DC) exec electri-backend-php vendor/bin/php-cs-fixer fix
 
 # Run all backend linting
 lint-backend-all: lint-phpstan lint-cs-check
