@@ -1,0 +1,1108 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Electricidad Mendoza de Dios API",
+    "description": "API pública, de administración e interna para Electricidad Mendoza de Dios. Incluye gestión de servicios, FAQ, contactos, configuración del sitio y health checks.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Electricidad Mendoza de Dios",
+      "email": "info@electricidadmendozadedios.es",
+      "url": "https://electricidadmendozadedios.es"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://electricidadmendozadedios.online",
+      "description": "Producción"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Público",
+      "description": "Endpoints accesibles sin autenticación"
+    },
+    {
+      "name": "Administración",
+      "description": "Endpoints protegidos por sesión de administrador"
+    },
+    {
+      "name": "Interno",
+      "description": "Endpoints para automatización interna (n8n). Requieren API Key."
+    },
+    {
+      "name": "Sistema",
+      "description": "Health checks y estado del sistema"
+    }
+  ],
+  "paths": {
+    "/api/services": {
+      "get": {
+        "tags": ["Público"],
+        "summary": "Listar servicios",
+        "operationId": "listServices",
+        "responses": {
+          "200": {
+            "description": "Lista de servicios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Service" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/services/{slug}": {
+      "get": {
+        "tags": ["Público"],
+        "summary": "Detalle de un servicio",
+        "operationId": "getServiceBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del servicio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/Service" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Servicio no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/site-settings/public": {
+      "get": {
+        "tags": ["Público"],
+        "summary": "Configuración pública del sitio",
+        "operationId": "getPublicSiteSettings",
+        "responses": {
+          "200": {
+            "description": "Configuración del sitio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/SiteSettings" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/faq": {
+      "get": {
+        "tags": ["Público"],
+        "summary": "Listar preguntas frecuentes",
+        "operationId": "listFaqs",
+        "responses": {
+          "200": {
+            "description": "Lista de FAQs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Faq" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contact": {
+      "post": {
+        "tags": ["Público"],
+        "summary": "Enviar formulario de contacto",
+        "operationId": "createContactLead",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ContactPayload" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contacto creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit excedido (máx. 5 peticiones / 10 min)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/login": {
+      "post": {
+        "tags": ["Administración"],
+        "summary": "Iniciar sesión de administrador",
+        "operationId": "adminLogin",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": { "type": "string" }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso. Establece sesión por cookie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "csrf_token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/logout": {
+      "post": {
+        "tags": ["Administración"],
+        "summary": "Cerrar sesión de administrador",
+        "operationId": "adminLogout",
+        "security": [
+          { "sessionAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sesión cerrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services": {
+      "get": {
+        "tags": ["Administración"],
+        "summary": "Listar servicios (admin)",
+        "operationId": "adminListServices",
+        "security": [
+          { "sessionAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de servicios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Service" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Administración"],
+        "summary": "Crear servicio",
+        "operationId": "createService",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ServicePayload" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Servicio creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/services/{id}": {
+      "put": {
+        "tags": ["Administración"],
+        "summary": "Actualizar servicio",
+        "operationId": "updateService",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ServicePayload" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Servicio actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Servicio no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Administración"],
+        "summary": "Eliminar servicio",
+        "operationId": "deleteService",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Servicio eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Servicio no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/faq": {
+      "get": {
+        "tags": ["Administración"],
+        "summary": "Listar FAQs (admin)",
+        "operationId": "adminListFaqs",
+        "security": [
+          { "sessionAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de FAQs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Faq" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Administración"],
+        "summary": "Crear FAQ",
+        "operationId": "createFaq",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FaqPayload" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "FAQ creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/faq/{id}": {
+      "put": {
+        "tags": ["Administración"],
+        "summary": "Actualizar FAQ",
+        "operationId": "updateFaq",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FaqPayload" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "FAQ actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "FAQ no encontrada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Administración"],
+        "summary": "Eliminar FAQ",
+        "operationId": "deleteFaq",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "FAQ eliminada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "FAQ no encontrada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/site-settings": {
+      "get": {
+        "tags": ["Administración"],
+        "summary": "Obtener configuración del sitio",
+        "operationId": "adminGetSiteSettings",
+        "security": [
+          { "sessionAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuración del sitio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "$ref": "#/components/schemas/SiteSettings" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Administración"],
+        "summary": "Actualizar configuración del sitio",
+        "operationId": "updateSiteSettings",
+        "security": [
+          { "sessionAuth": [], "csrfToken": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SiteSettingsPayload" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuración actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Errores de validación",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ValidationError" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "CSRF token inválido",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/internal/contacts/pending": {
+      "get": {
+        "tags": ["Interno"],
+        "summary": "Contactos pendientes de notificar",
+        "operationId": "getPendingContacts",
+        "security": [
+          { "internalApiKey": [] }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de contactos pendientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ContactLead" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API Key inválida",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/internal/contacts/{id}/sent": {
+      "patch": {
+        "tags": ["Interno"],
+        "summary": "Marcar contacto como enviado",
+        "operationId": "markContactSent",
+        "security": [
+          { "internalApiKey": [] }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contacto marcado como enviado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contacto no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "API Key inválida",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Sistema"],
+        "summary": "Health check",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Sistema saludable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthStatus" }
+              }
+            }
+          },
+          "503": {
+            "description": "Sistema no saludable",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthStatus" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Service": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "slug": { "type": "string" },
+          "name": { "type": "string" },
+          "summary": { "type": "string" },
+          "benefits": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["id", "slug", "name", "summary", "benefits"]
+      },
+      "ServicePayload": {
+        "type": "object",
+        "properties": {
+          "slug": { "type": "string" },
+          "name": { "type": "string" },
+          "summary": { "type": "string" },
+          "benefits": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["slug", "name", "summary", "benefits"]
+      },
+      "Faq": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "question": { "type": "string" },
+          "answer": { "type": "string" }
+        },
+        "required": ["id", "question", "answer"]
+      },
+      "FaqPayload": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string" },
+          "answer": { "type": "string" }
+        },
+        "required": ["question", "answer"]
+      },
+      "SiteSettings": {
+        "type": "object",
+        "properties": {
+          "brand": { "type": "string" },
+          "tagline": { "type": "string" },
+          "phone": { "type": "string" },
+          "phone_display": { "type": "string" },
+          "whatsapp": { "type": "string" },
+          "email": { "type": "string" },
+          "address": { "type": "string" },
+          "cta": { "type": "string" }
+        },
+        "required": ["brand", "tagline", "phone", "phone_display", "whatsapp", "email", "address", "cta"]
+      },
+      "SiteSettingsPayload": {
+        "type": "object",
+        "properties": {
+          "brand": { "type": "string" },
+          "tagline": { "type": "string" },
+          "phone": { "type": "string" },
+          "phone_display": { "type": "string" },
+          "whatsapp": { "type": "string" },
+          "email": { "type": "string" },
+          "address": { "type": "string" },
+          "cta": { "type": "string" }
+        },
+        "required": ["brand", "tagline", "phone", "phone_display", "whatsapp", "email", "address", "cta"]
+      },
+      "ContactPayload": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 2 },
+          "phone": {
+            "type": "string",
+            "pattern": "^[0-9+\\s-]{6,20}$"
+          },
+          "email": { "type": "string", "format": "email", "nullable": true },
+          "type": { "type": "string", "nullable": true },
+          "area": { "type": "string", "nullable": true },
+          "message": { "type": "string", "nullable": true }
+        },
+        "required": ["name", "phone"]
+      },
+      "ContactLead": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "phone": { "type": "string" },
+          "email": { "type": "string", "nullable": true },
+          "type": { "type": "string", "nullable": true },
+          "area": { "type": "string", "nullable": true },
+          "message": { "type": "string", "nullable": true },
+          "ip": { "type": "string", "nullable": true },
+          "userAgent": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "name", "phone", "createdAt"]
+      },
+      "HealthStatus": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["healthy", "unhealthy"] },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "checks": {
+            "type": "object",
+            "properties": {
+              "database": { "$ref": "#/components/schemas/HealthCheck" },
+              "redis": { "$ref": "#/components/schemas/HealthCheck" },
+              "mailer": { "$ref": "#/components/schemas/HealthCheck" }
+            }
+          }
+        },
+        "required": ["status", "timestamp", "checks"]
+      },
+      "HealthCheck": {
+        "type": "object",
+        "properties": {
+          "healthy": { "type": "boolean", "nullable": true },
+          "message": { "type": "string", "nullable": true },
+          "error": { "type": "string", "nullable": true },
+          "response_time_ms": { "type": "number", "nullable": true }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        },
+        "required": ["error"]
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "required": ["errors"]
+      }
+    },
+    "securitySchemes": {
+      "sessionAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "PHPSESSID",
+        "description": "Sesión de administrador gestionada por Symfony. Se establece tras el login exitoso."
+      },
+      "csrfToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-TOKEN",
+        "description": "Token CSRF devuelto en el login. Obligatorio en operaciones de escritura (POST, PUT, PATCH, DELETE) del panel de administración."
+      },
+      "internalApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Internal-Api-Key",
+        "description": "Clave API para endpoints internos utilizados por n8n."
+      }
+    }
+  }
+}
