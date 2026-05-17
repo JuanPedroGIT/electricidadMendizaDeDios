@@ -28,7 +28,9 @@ COPY composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 COPY . .
 RUN mkdir -p var/cache var/log
+RUN chmod -R 777 var/
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 EXPOSE 8000
+RUN php bin/console cache:clear --no-warmup || true
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]
