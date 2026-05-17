@@ -22,18 +22,18 @@ final readonly class ContactLeadCreatedEventListener
 
     public function __invoke(ContactLeadCreatedEvent $event): void
     {
-        try {
-            $email = (new Email())
-                ->from($this->notificationFrom)
-                ->to($this->notificationTo)
-                ->subject('Nuevo contacto desde web: ' . $event->name)
-                ->html($this->buildEmailHtml($event));
-
-            $this->mailer->send($email);
-        } catch (\Exception $e) {
-            // Log error but don't fail the request - user experience priority
-            error_log('Failed to send contact notification: ' . $e->getMessage());
-        }
+        // Desactivado: el envío de emails lo gestiona n8n vía polling a /api/internal/contacts/pending
+        // try {
+        //     $email = (new Email())
+        //         ->from($this->notificationFrom)
+        //         ->to($this->notificationTo)
+        //         ->subject('Nuevo contacto desde web: ' . $event->name)
+        //         ->html($this->buildEmailHtml($event));
+        //
+        //     $this->mailer->send($email);
+        // } catch (\Exception $e) {
+        //     error_log('Failed to send contact notification: ' . $e->getMessage());
+        // }
     }
 
     private function buildEmailHtml(ContactLeadCreatedEvent $event): string

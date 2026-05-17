@@ -9,6 +9,7 @@ use App\Domain\SiteSetting\Repository\SiteSettingRepositoryInterface;
 use App\Domain\Shared\ValueObject\Uuid;
 use App\Infrastructure\Persistence\Doctrine\Entity\SiteSettingOrmEntity;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid as OrmUuid;
 
 final class DoctrineSiteSettingRepository implements SiteSettingRepositoryInterface
 {
@@ -25,7 +26,7 @@ final class DoctrineSiteSettingRepository implements SiteSettingRepositoryInterf
 
         if ($ormEntity === null) {
             $ormEntity = new SiteSettingOrmEntity();
-            $ormEntity->setId(Uuid::fromString($siteSetting->getId()->toString()));
+            $ormEntity->setId(OrmUuid::fromString($siteSetting->getId()->toString()));
             $ormEntity->setCreatedAt($siteSetting->getCreatedAt()->toDateTimeImmutable());
             $this->entityManager->persist($ormEntity);
         }

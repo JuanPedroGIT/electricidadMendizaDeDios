@@ -9,6 +9,7 @@ use App\Domain\Contact\Repository\ContactLeadRepositoryInterface;
 use App\Domain\Shared\ValueObject\Uuid;
 use App\Infrastructure\Persistence\Doctrine\Entity\ContactLeadOrmEntity;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid as OrmUuid;
 
 final class DoctrineContactLeadRepository implements ContactLeadRepositoryInterface
 {
@@ -19,8 +20,29 @@ final class DoctrineContactLeadRepository implements ContactLeadRepositoryInterf
 
     public function save(ContactLead $contactLead): void
     {
-        $ormEntity = $this->toOrmEntity($contactLead);
-        $this->entityManager->persist($ormEntity);
+        $ormEntity = $this->entityManager
+            ->getRepository(ContactLeadOrmEntity::class)
+            ->find($contactLead->getId()->toString());
+
+        if ($ormEntity === null) {
+            $ormEntity = new ContactLeadOrmEntity();
+            $ormEntity->setId(OrmUuid::fromString($contactLead->getId()->toString()));
+            $ormEntity->setCreatedAt($contactLead->getCreatedAt()->toDateTimeImmutable());
+            $this->entityManager->persist($ormEntity);
+        }
+
+        $ormEntity->setName($contactLead->getName());
+        $ormEntity->setPhone($contactLead->getPhone()->toString());
+        $ormEntity->setEmail($contactLead->getEmail()?->toString());
+        $ormEntity->setType($contactLead->getType());
+        $ormEntity->setArea($contactLead->getArea());
+        $ormEntity->setMessage($contactLead->getMessage());
+        $ormEntity->setIp($contactLead->getIp());
+        $ormEntity->setUserAgent($contactLead->getUserAgent());
+        if ($contactLead->getSendDate() !== null) {
+            $ormEntity->setSendDate($contactLead->getSendDate()->toDateTimeImmutable());
+        }
+
         $this->entityManager->flush();
     }
 
@@ -45,21 +67,21 @@ final class DoctrineContactLeadRepository implements ContactLeadRepositoryInterf
         );
     }
 
-    private function toOrmEntity(ContactLead $domain): ContactLeadOrmEntity
+    public function findPending(int $limit): array
     {
-        $orm = new ContactLeadOrmEntity();
-        $orm->setId(Uuid::fromString($domain->getId()->toString()));
-        $orm->setName($domain->getName());
-        $orm->setPhone($domain->getPhone()->toString());
-        $orm->setEmail($domain->getEmail()?->toString());
-        $orm->setType($domain->getType());
-        $orm->setArea($domain->getArea());
-        $orm->setMessage($domain->getMessage());
-        $orm->setIp($domain->getIp());
-        $orm->setUserAgent($domain->getUserAgent());
-        $orm->setCreatedAt($domain->getCreatedAt()->toDateTimeImmutable());
+        $ormEntities = $this->entityManager
+            ->getRepository(ContactLeadOrmEntity::class)
+            ->createQueryBuilder('c')
+            ->where('c.sendDate IS NULL')
+            ->orderBy('c.createdAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
-        return $orm;
+        return array_map(
+            fn ($entity) => $this->toDomainEntity($entity),
+            $ormEntities
+        );
     }
 
     private function toDomainEntity(ContactLeadOrmEntity $orm): ContactLead
@@ -74,7 +96,8 @@ final class DoctrineContactLeadRepository implements ContactLeadRepositoryInterf
             $orm->getMessage(),
             $orm->getIp(),
             $orm->getUserAgent(),
-            \App\Domain\Shared\ValueObject\DateTime::fromDateTimeImmutable($orm->getCreatedAt())
+            \App\Domain\Shared\ValueObject\DateTime::fromDateTimeImmutable($orm->getCreatedAt()),
+            $orm->getSendDate() ? \App\Domain\Shared\ValueObject\DateTime::fromDateTimeImmutable($orm->getSendDate()) : null
         );
     }
 }

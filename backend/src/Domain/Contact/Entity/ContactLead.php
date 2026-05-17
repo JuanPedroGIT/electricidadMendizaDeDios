@@ -21,6 +21,7 @@ final class ContactLead
     private ?string $ip;
     private ?string $userAgent;
     private DateTime $createdAt;
+    private ?DateTime $sendDate;
 
     public function __construct(
         Uuid $id,
@@ -32,7 +33,8 @@ final class ContactLead
         ?string $message,
         ?string $ip,
         ?string $userAgent,
-        DateTime $createdAt
+        DateTime $createdAt,
+        ?DateTime $sendDate = null
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -44,6 +46,7 @@ final class ContactLead
         $this->ip = $ip;
         $this->userAgent = $userAgent;
         $this->createdAt = $createdAt;
+        $this->sendDate = $sendDate;
     }
 
     public static function create(
@@ -66,8 +69,19 @@ final class ContactLead
             $message,
             $ip,
             $userAgent,
-            DateTime::now()
+            DateTime::now(),
+            null
         );
+    }
+
+    public function markAsSent(): void
+    {
+        $this->sendDate = DateTime::now();
+    }
+
+    public function getSendDate(): ?DateTime
+    {
+        return $this->sendDate;
     }
 
     public function getId(): Uuid

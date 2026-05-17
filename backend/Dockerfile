@@ -19,7 +19,7 @@ COPY composer.json composer.lock* ./
 RUN composer install --no-scripts --no-interaction
 ENV APP_ENV=dev
 EXPOSE 8000
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]
 
 FROM base AS prod
 RUN echo "opcache.enable=1\nopcache.memory_consumption=128\nopcache.max_accelerated_files=10000\nopcache.validate_timestamps=0" \
@@ -27,7 +27,8 @@ RUN echo "opcache.enable=1\nopcache.memory_consumption=128\nopcache.max_accelera
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 COPY . .
+RUN mkdir -p var/cache var/log
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 EXPOSE 8000
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]

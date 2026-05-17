@@ -17,4 +17,9 @@ interface ContactLeadRepositoryInterface
      * @return ContactLead[]
      */
     public function findAll(): array;
+
+    /**
+     * @return ContactLead[]
+     */
+    public function findPending(int $limit): array;
 }

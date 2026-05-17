@@ -11,6 +11,7 @@ import {
   EMAIL,
   ADDRESS,
 } from '../data/contact'
+import { publicApi } from '../api/publicApi'
 
 // Services data with free images
 const services = [
@@ -152,8 +153,13 @@ const handleSubmit = async () => {
   submitSuccess.value = false
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await publicApi.sendContact({
+      name: form.value.name,
+      phone: form.value.phone,
+      email: form.value.email || undefined,
+      type: form.value.service || undefined,
+      message: form.value.message || undefined,
+    })
     submitSuccess.value = true
     form.value = {
       name: '',
@@ -163,8 +169,8 @@ const handleSubmit = async () => {
       message: '',
       privacy: false,
     }
-  } catch (error) {
-    submitError.value = 'Ha ocurrido un error. Por favor, inténtalo de nuevo.'
+  } catch (error: any) {
+    submitError.value = error?.message || 'Ha ocurrido un error. Por favor, inténtalo de nuevo.'
   } finally {
     isSubmitting.value = false
   }

@@ -81,16 +81,16 @@ const router = createRouter({
 })
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const authStore = useAdminAuthStore()
   authStore.restoreSession()
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/admin/login')
-  } else if (to.meta.guest && authStore.isAuthenticated) {
-    next('/admin')
-  } else {
-    next()
+    return { path: '/admin/login' }
+  }
+
+  if (to.meta.guest && authStore.isAuthenticated) {
+    return { path: '/admin' }
   }
 })
 

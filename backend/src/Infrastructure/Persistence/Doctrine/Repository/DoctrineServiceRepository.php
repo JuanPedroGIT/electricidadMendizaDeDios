@@ -9,6 +9,7 @@ use App\Domain\Service\Repository\ServiceRepositoryInterface;
 use App\Domain\Shared\ValueObject\Uuid;
 use App\Infrastructure\Persistence\Doctrine\Entity\ServiceOrmEntity;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid as OrmUuid;
 
 final class DoctrineServiceRepository implements ServiceRepositoryInterface
 {
@@ -25,7 +26,7 @@ final class DoctrineServiceRepository implements ServiceRepositoryInterface
 
         if ($ormEntity === null) {
             $ormEntity = new ServiceOrmEntity();
-            $ormEntity->setId(Uuid::fromString($service->getId()->toString()));
+            $ormEntity->setId(OrmUuid::fromString($service->getId()->toString()));
             $ormEntity->setCreatedAt($service->getCreatedAt()->toDateTimeImmutable());
             $this->entityManager->persist($ormEntity);
         }

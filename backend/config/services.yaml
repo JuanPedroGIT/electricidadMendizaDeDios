@@ -3,6 +3,7 @@
 
 parameters:
     admin.password_hash: '%env(ADMIN_PASSWORD_HASH)%'
+    internal_api_key: '%env(INTERNAL_API_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -122,7 +123,12 @@ services:
         tags:
             - { name: messenger.message_handler, bus: query.bus, method: handle }
 
+    # Internal API Key subscriber
+    App\Infrastructure\Security\InternalApiKeySubscriber:
+        arguments:
+            $internalApiKey: '%internal_api_key%'
+
     # Event Listeners
-    App\Infrastructure\EventListener\ContactLeadCreatedEventListener:
-        tags:
-            - { name: kernel.event_listener, event: App\Application\Contact\Event\ContactLeadCreatedEvent }
+    # App\Infrastructure\EventListener\ContactLeadCreatedEventListener:
+    #     tags:
+    #         - { name: kernel.event_listener, event: App\Application\Contact\Event\ContactLeadCreatedEvent }

@@ -62,5 +62,7 @@ final class CreateContactLeadCommandHandler implements CommandHandlerInterface
             $contactLead->getArea(),
             $contactLead->getMessage()
         ));
+
+        return null;
     }
 }

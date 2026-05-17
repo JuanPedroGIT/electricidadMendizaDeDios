@@ -1,4 +1,4 @@
-# PROJECT SPEC – Reformas Salamanca (v2 2026-04-04)
+# PROJECT SPEC – Reformas Salamanca (v3 2026-05-17)
 
 Documento maestro para construir y hacer crecer la web corporativa de la empresa de reformas y construcción localizada en Salamanca.
 
@@ -61,7 +61,7 @@ Documento maestro para construir y hacer crecer la web corporativa de la empresa
 - Accesibilidad: contraste ≥ 4.5:1, foco visible, navegación por teclado.
 
 ## 10. Stack técnico
-- Backend: Symfony 7, PHP 8.3, arquitectura hexagonal, Doctrine ORM/Migrations, PostgreSQL.
+- Backend: Symfony 8, PHP 8.4, arquitectura hexagonal, Doctrine ORM/Migrations, PostgreSQL.
 - Frontend: Vue 3, TypeScript, Vite, Vue Router, SCSS; Vitest + Playwright/Cypress.
 - Infra compartida (sin duplicar servicios):
   - Red: usar la red externa `shared-network` definida en `apps/infra/docker-compose.yml`.
@@ -72,7 +72,7 @@ Documento maestro para construir y hacer crecer la web corporativa de la empresa
   - Compose del proyecto: declarar solo frontend/backend (y worker si aplica) y unirlos a `shared-network` (`external: true`); sin levantar postgres/redis locales.
 
 ## 11. Módulos backend (fase 1)
-- `Contact`: recibir leads, validar, rate limit, almacenar, notificar.
+- `Contact`: recibir leads, validar, rate limit, almacenar. El envío de notificaciones por email se delega a n8n mediante polling a un endpoint interno; la tabla `contact_leads` incluye `send_date` nullable que n8n marca tras enviar el email.
 - `Service`: lista y detalle de servicios; campos SEO.
 - `SiteContent`: textos globales (hero, razones, proceso, seguimiento, CTA, datos contacto).
 - `Faq`: preguntas frecuentes.
@@ -82,6 +82,7 @@ Documento maestro para construir y hacer crecer la web corporativa de la empresa
 ## 12. API inicial
 - Público: `GET /health`, `GET /api/services`, `GET /api/services/{slug}`, `GET /api/site-settings/public`, `GET /api/faq`, `POST /api/contact`.
 - Admin: `POST /api/admin/login`, `GET/POST/PUT services`, `GET/POST/PUT faq`, `GET/PUT site-settings`.
+- Interno (n8n): `GET /api/internal/contacts/pending?limit=50`, `PATCH /api/internal/contacts/{id}/sent`. Protegidos por API key estática (`X-Internal-Api-Key`).
 - Futuro: endpoints de `Project` y landings adicionales.
 
 ## 13. Frontend
@@ -93,7 +94,7 @@ Documento maestro para construir y hacer crecer la web corporativa de la empresa
 ## 14. Datos y migraciones
 - Entidades: `ContactLead`, `Service`, `SiteSetting`, `Faq`, `Project` (inactivo).
 - Una migration por cambio de esquema; seeds de dev para servicios/faq/contenido base.
-- Campos clave ContactLead: nombre, teléfono, email, localidad, servicio, mensaje, presupuesto opcional, plazo opcional, canal preferido, source_page, created_at, status.
+- Campos clave ContactLead: nombre, teléfono, email, localidad, servicio, mensaje, presupuesto opcional, plazo opcional, canal preferido, source_page, created_at, send_date (nullable; indica si n8n ya envió la notificación por email).
 
 ## 15. Seguridad y cumplimiento
 - Hash de contraseñas nativo (`password_hash`), sesiones expirables, protección CSRF en admin, rate limit en login y contacto.

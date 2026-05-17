@@ -42,6 +42,9 @@ class ContactLeadOrmEntity
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $sendDate = null;
+
     public function getId(): Uuid
     {
         return $this->id;
@@ -149,6 +152,17 @@ class ContactLeadOrmEntity
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getSendDate(): ?\DateTimeImmutable
+    {
+        return $this->sendDate;
+    }
+
+    public function setSendDate(?\DateTimeImmutable $sendDate): self
+    {
+        $this->sendDate = $sendDate;
         return $this;
     }
 }

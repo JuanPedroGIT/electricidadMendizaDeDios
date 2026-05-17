@@ -7,6 +7,7 @@ namespace App\Presentation\Controller;
 use App\Application\Shared\Bus\CommandBusInterface;
 use App\Application\Shared\Bus\QueryBusInterface;
 use App\Application\Contact\Command\CreateContactLeadCommand;
+use App\Application\Contact\Command\CreateContactLeadCommandHandler;
 use App\Application\Service\Query\GetServicesQuery;
 use App\Application\Service\Query\GetServiceBySlugQuery;
 use App\Application\Faq\Query\GetFaqsQuery;
@@ -26,6 +27,7 @@ final class PublicApiController
         private CommandBusInterface $commandBus,
         private QueryBusInterface $queryBus,
         private DatabaseSeeder $seeder,
+        private CreateContactLeadCommandHandler $createContactHandler,
         #[Autowire(service: 'limiter.contact_form')]
         private RateLimiterFactory $contactLimiter,
     ) {
@@ -110,7 +112,7 @@ final class PublicApiController
         }
 
         try {
-            $this->commandBus->dispatch($command);
+            $this->createContactHandler->handle($command);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['errors' => ['validation' => $e->getMessage()]], 422);
         }

@@ -9,6 +9,7 @@ use App\Domain\Faq\Repository\FaqRepositoryInterface;
 use App\Domain\Shared\ValueObject\Uuid;
 use App\Infrastructure\Persistence\Doctrine\Entity\FaqOrmEntity;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Uid\Uuid as OrmUuid;
 
 final class DoctrineFaqRepository implements FaqRepositoryInterface
 {
@@ -25,7 +26,7 @@ final class DoctrineFaqRepository implements FaqRepositoryInterface
 
         if ($ormEntity === null) {
             $ormEntity = new FaqOrmEntity();
-            $ormEntity->setId(Uuid::fromString($faq->getId()->toString()));
+            $ormEntity->setId(OrmUuid::fromString($faq->getId()->toString()));
             $ormEntity->setCreatedAt($faq->getCreatedAt()->toDateTimeImmutable());
             $this->entityManager->persist($ormEntity);
         }
