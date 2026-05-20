@@ -26,7 +26,7 @@ const services = [
     id: 2,
     name: 'Cuadros Eléctricos',
     description: 'Montaje, mantenimiento y actualización de cuadros eléctricos y protecciones.',
-    image: 'https://images.unsplash.com/photo-1558389400-99777677b12d?w=800&h=600&fit=crop',
+    image: 'https://images.unsplash.com/photo-1635335874521-7987db781153?w=800&h=600&fit=crop',
     link: '#servicios',
   },
   {
@@ -40,28 +40,28 @@ const services = [
     id: 4,
     name: 'Mantenimiento Industrial',
     description: 'Servicio técnico especializado para naves industriales y maquinaria eléctrica.',
-    image: 'https://images.unsplash.com/photo-1581091229493-c07766f9759b?w=800&h=600&fit=crop',
+    image: 'https://images.unsplash.com/photo-1596986952526-3be237187071?w=800&h=600&fit=crop',
     link: '#servicios',
   },
   {
     id: 5,
     name: 'Sistemas de Seguridad',
     description: 'Instalación de alarmas, videovigilancia y control de accesos eléctricos.',
-    image: 'https://images.unsplash.com/photo-1557597774-9d557677f17b?w=800&h=600&fit=crop',
+    image: 'https://images.unsplash.com/photo-1704737825103-3fd8cedf3cc0?w=800&h=600&fit=crop',
     link: '#servicios',
   },
   {
     id: 6,
     name: 'Boletines Eléctricos',
     description: 'Gestión de boletines, certificados de instalación y legalizaciones.',
-    image: 'https://images.unsplash.com/photo-1454165833767-027ff9597e9d?w=800&h=600&fit=crop',
+    image: 'https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?w=800&h=600&fit=crop',
     link: '#servicios',
   },
   {
     id: 7,
     name: 'Energía Solar',
     description: 'Asesoramiento e instalación de paneles fotovoltaicos para autoconsumo.',
-    image: 'https://images.unsplash.com/photo-1508514177221-7576a4739736?w=800&h=600&fit=crop',
+    image: 'https://images.unsplash.com/photo-1635424824849-1b09bdcc55b1?w=800&h=600&fit=crop',
     link: '#servicios',
   },
   {
@@ -87,7 +87,7 @@ const projects = [
     id: 1,
     title: 'Cuadro eléctrico industrial',
     category: 'Cuadros Eléctricos',
-    image: 'https://images.unsplash.com/photo-1558389400-99777677b12d?w=600&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1601462904263-f2fa0c851cb9?w=600&h=400&fit=crop',
   },
   {
     id: 2,
@@ -99,13 +99,13 @@ const projects = [
     id: 3,
     title: 'Instalación solar fotovoltaica',
     category: 'Energía Solar',
-    image: 'https://images.unsplash.com/photo-1508514177221-7576a4739736?w=600&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1635424824800-692767998d07?w=600&h=400&fit=crop',
   },
   {
     id: 4,
     title: 'Mantenimiento preventivo nave',
     category: 'Mantenimiento Industrial',
-    image: 'https://images.unsplash.com/photo-1581091229493-c07766f9759b?w=600&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1643986708670-44a6902433e0?w=600&h=400&fit=crop',
   },
 ]
 
