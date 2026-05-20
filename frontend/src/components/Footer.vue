@@ -38,22 +38,22 @@ import { PHONE_LINK, PHONE_DISPLAY, WHATSAPP_LINK, EMAIL, ADDRESS, LEGAL_NAME } 
         <div class="footer-column">
           <h4>Servicios</h4>
           <nav class="footer-links">
-            <a href="#servicios">Reformas integrales</a>
-            <a href="#servicios">Cocinas</a>
-            <a href="#servicios">Baños</a>
-            <a href="#servicios">Obra nueva</a>
-            <a href="#servicios">Fachadas</a>
-            <a href="#servicios">Cubiertas</a>
+            <RouterLink to="/#servicios">Reformas integrales</RouterLink>
+            <RouterLink to="/#servicios">Cocinas</RouterLink>
+            <RouterLink to="/#servicios">Baños</RouterLink>
+            <RouterLink to="/#servicios">Obra nueva</RouterLink>
+            <RouterLink to="/#servicios">Fachadas</RouterLink>
+            <RouterLink to="/#servicios">Cubiertas</RouterLink>
           </nav>
         </div>
 
         <div class="footer-column">
           <h4>Empresa</h4>
           <nav class="footer-links">
-            <a href="#nosotros">Sobre nosotros</a>
-            <a href="#proyectos">Proyectos</a>
-            <a href="#blog">Blog</a>
-            <a href="#contacto">Contacto</a>
+            <RouterLink to="/#nosotros">Sobre nosotros</RouterLink>
+            <RouterLink to="/#proyectos">Proyectos</RouterLink>
+            <RouterLink to="/#faq">Blog</RouterLink>
+            <RouterLink to="/#contacto">Contacto</RouterLink>
           </nav>
         </div>
 
