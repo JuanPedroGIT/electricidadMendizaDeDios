@@ -31,6 +31,7 @@ final readonly class DatabaseSeeder
                     $serviceData['slug'],
                     $serviceData['name'],
                     $serviceData['summary'],
+                    $serviceData['image'] ?? null,
                     $serviceData['benefits']
                 );
                 $this->serviceRepository->save($service);

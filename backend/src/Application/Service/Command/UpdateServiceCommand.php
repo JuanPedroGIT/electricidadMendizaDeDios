@@ -16,6 +16,7 @@ final readonly class UpdateServiceCommand implements CommandInterface
         public string $slug,
         public string $name,
         public string $summary,
+        public ?string $image,
         public array $benefits
     ) {
     }

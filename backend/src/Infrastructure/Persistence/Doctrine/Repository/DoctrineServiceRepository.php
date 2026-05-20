@@ -34,6 +34,7 @@ final class DoctrineServiceRepository implements ServiceRepositoryInterface
         $ormEntity->setSlug($service->getSlug());
         $ormEntity->setName($service->getName());
         $ormEntity->setSummary($service->getSummary());
+        $ormEntity->setImage($service->getImage());
         $ormEntity->setBenefits($service->getBenefits());
         $ormEntity->setUpdatedAt($service->getUpdatedAt()->toDateTimeImmutable());
 
@@ -114,6 +115,7 @@ final class DoctrineServiceRepository implements ServiceRepositoryInterface
             $orm->getSlug(),
             $orm->getName(),
             $orm->getSummary(),
+            $orm->getImage(),
             $orm->getBenefits(),
             \App\Domain\Shared\ValueObject\DateTime::fromDateTimeImmutable($orm->getCreatedAt()),
             \App\Domain\Shared\ValueObject\DateTime::fromDateTimeImmutable($orm->getUpdatedAt())

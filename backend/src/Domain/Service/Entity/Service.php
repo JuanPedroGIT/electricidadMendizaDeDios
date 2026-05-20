@@ -13,6 +13,7 @@ final class Service
     private string $slug;
     private string $name;
     private string $summary;
+    private ?string $image;
     private array $benefits;
     private DateTime $createdAt;
     private DateTime $updatedAt;
@@ -22,6 +23,7 @@ final class Service
         string $slug,
         string $name,
         string $summary,
+        ?string $image,
         array $benefits,
         DateTime $createdAt,
         DateTime $updatedAt
@@ -30,6 +32,7 @@ final class Service
         $this->slug = $slug;
         $this->name = $name;
         $this->summary = $summary;
+        $this->image = $image;
         $this->benefits = $benefits;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -39,6 +42,7 @@ final class Service
         string $slug,
         string $name,
         string $summary,
+        ?string $image,
         array $benefits
     ): self {
         $now = DateTime::now();
@@ -47,6 +51,7 @@ final class Service
             $slug,
             $name,
             $summary,
+            $image,
             $benefits,
             $now,
             $now
@@ -57,11 +62,13 @@ final class Service
         string $slug,
         string $name,
         string $summary,
+        ?string $image,
         array $benefits
     ): void {
         $this->slug = $slug;
         $this->name = $name;
         $this->summary = $summary;
+        $this->image = $image;
         $this->benefits = $benefits;
         $this->updatedAt = DateTime::now();
     }
@@ -84,6 +91,11 @@ final class Service
     public function getSummary(): string
     {
         return $this->summary;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
     }
 
     public function getBenefits(): array

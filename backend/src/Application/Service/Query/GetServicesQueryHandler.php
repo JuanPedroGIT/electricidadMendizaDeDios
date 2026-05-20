@@ -29,6 +29,7 @@ final class GetServicesQueryHandler implements QueryHandlerInterface
             $service->getSlug(),
             $service->getName(),
             $service->getSummary(),
+            $service->getImage(),
             $service->getBenefits()
         ), $services);
     }

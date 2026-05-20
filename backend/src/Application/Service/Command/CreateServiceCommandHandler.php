@@ -30,6 +30,7 @@ final class CreateServiceCommandHandler implements CommandHandlerInterface
             $command->slug,
             $command->name,
             $command->summary,
+            $command->image,
             $command->benefits
         );
 

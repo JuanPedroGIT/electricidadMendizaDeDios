@@ -24,6 +24,9 @@ class ServiceOrmEntity
     #[ORM\Column(type: 'text')]
     private string $summary;
 
+    #[ORM\Column(type: 'string', length: 500, nullable: true)]
+    private ?string $image = null;
+
     #[ORM\Column(type: 'json')]
     private array $benefits = [];
 
@@ -74,6 +77,17 @@ class ServiceOrmEntity
     public function setSummary(string $summary): self
     {
         $this->summary = $summary;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 

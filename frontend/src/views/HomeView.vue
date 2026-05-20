@@ -13,8 +13,8 @@ import {
 } from '../data/contact'
 import { publicApi } from '../api/publicApi'
 
-// Services data with free images
-const services = [
+// Services data loaded from API with fallback
+const defaultServices = [
   {
     id: 1,
     name: 'Instalaciones Eléctricas',
@@ -72,6 +72,34 @@ const services = [
     link: '#servicios',
   },
 ]
+
+interface ServiceItem {
+  id: string | number
+  name: string
+  description: string
+  image: string
+  link: string
+}
+
+const services = ref<ServiceItem[]>(defaultServices)
+
+// Load services from API
+async function loadServices() {
+  try {
+    const response = await publicApi.fetchServices()
+    if (response.data && response.data.length > 0) {
+      services.value = response.data.map((s, index) => ({
+        id: s.id ?? index + 1,
+        name: s.name,
+        description: s.summary,
+        image: s.image || defaultServices[index]?.image || '',
+        link: '#servicios',
+      }))
+    }
+  } catch {
+    // keep fallback
+  }
+}
 
 // Stats data
 const stats = [
@@ -178,6 +206,8 @@ const handleSubmit = async () => {
 
 // Scroll animations
 onMounted(() => {
+  loadServices()
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {

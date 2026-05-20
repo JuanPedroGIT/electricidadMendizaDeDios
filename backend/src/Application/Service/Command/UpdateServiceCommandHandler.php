@@ -36,6 +36,7 @@ final class UpdateServiceCommandHandler implements CommandHandlerInterface
             $command->slug,
             $command->name,
             $command->summary,
+            $command->image,
             $command->benefits
         );
 

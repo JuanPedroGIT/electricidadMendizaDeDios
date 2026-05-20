@@ -15,6 +15,7 @@ final readonly class CreateServiceCommand implements CommandInterface
         public string $slug,
         public string $name,
         public string $summary,
+        public ?string $image,
         public array $benefits
     ) {
     }

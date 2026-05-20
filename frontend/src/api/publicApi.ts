@@ -42,6 +42,7 @@ export type ServiceDto = {
   slug: string;
   name: string;
   summary: string;
+  image?: string;
   benefits: string[];
 };
 

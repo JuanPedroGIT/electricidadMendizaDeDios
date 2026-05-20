@@ -96,6 +96,7 @@ final class AdminApiController
             $payload['slug'],
             $payload['name'],
             $payload['summary'],
+            $payload['image'] ?? null,
             $payload['benefits']
         );
 
@@ -121,6 +122,7 @@ final class AdminApiController
             $payload['slug'],
             $payload['name'],
             $payload['summary'],
+            $payload['image'] ?? null,
             $payload['benefits']
         );
 
