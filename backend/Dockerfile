@@ -24,6 +24,8 @@ CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]
 FROM base AS prod
 RUN printf "opcache.enable=1\nopcache.memory_consumption=128\nopcache.max_accelerated_files=10000\nopcache.validate_timestamps=0\n" \
     > /usr/local/etc/php/conf.d/zz-opcache-prod.ini
+# Defensa en profundidad: desactiva el upload progress de sesion (mitiga vectores RCE tipo PHP2Shell)
+RUN printf "session.upload_progress.enabled=0\n" > /usr/local/etc/php/conf.d/zz-security.ini
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 COPY . .
